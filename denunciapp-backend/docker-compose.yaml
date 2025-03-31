@@ -1,0 +1,40 @@
+
+services:
+    db:
+      image: postgres:latest
+      container_name: postgres_db
+      restart: unless-stopped
+      environment:
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_DB: ${DB_NAME}
+      ports:
+        - "${DB_PORT}:5432"
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: denunciapp_backend
+      environment:
+        DB_HOST: ${DB_HOST}
+        DB_PORT: 5432
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+      volumes:
+        - .:/usr/src/app
+        - /usr/src/app/node_modules
+      ports:
+        - "3001:3000"
+      depends_on:
+        - db
+      command: ["npm", "run", "dev"]
+      
+networks:
+  default:
+    driver: bridge
+    
+volumes:
+  pgdata:
