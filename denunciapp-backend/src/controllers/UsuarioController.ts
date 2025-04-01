@@ -71,14 +71,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const getUserByID = async (req: Request, res: Response) => {
     try{
-        const {Usario_ID} = req.params; //parsing from the request body
+        const { Usuario_ID } = req.params; //parsing from the request body
 
-        if(!Usario_ID){
+        if(!Usuario_ID){
             res.status(400).json({ message: 'Usuario_ID no existe' });
             return;
         }
         const user = await prisma.usuario.findUnique({
-            where: { Usuario_ID: Number(Usario_ID) },
+            where: { Usuario_ID: Number(Usuario_ID) },
         })
         if(!user){
             res.status(400).json({ message: 'Usuario no encontrado' });
