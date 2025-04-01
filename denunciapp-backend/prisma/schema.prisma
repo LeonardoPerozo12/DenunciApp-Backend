@@ -1,14 +1,89 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DB_URL")
+}
+enum Estado_Reporte {
+  PENDIENTE
+  EN_PROCESO
+  RESUELTO
+}
+model Usuario {
+  Usuario_ID Int      @id @default(autoincrement())
+  Nombre     String
+  Cedula    String   @unique
+  Correo   String   @unique
+  Contraseña String
+  Activo    Boolean  @default(true)
+  Fecha_Registro DateTime @default(now())
+  Administrador Boolean @default(false)
+  Reportes  Reporte[] // Relación con Reporte
+}
+
+model Reporte {
+  Reporte_ID Int      @id @default(autoincrement())
+  Fecha_Registro DateTime @default(now())
+  Fecha_cierre DateTime?
+  Fecha_Ultima_Actualizacion DateTime?
+  Estado Estado_Reporte @default(PENDIENTE)
+  Descripcion String
+  Usuario_ID Int
+  Ubicacion_ID Int
+  Categoria_ID Int
+  Usuario Usuario @relation(fields: [Usuario_ID], references: [Usuario_ID]) // Relación con Usuario
+  Categoria Categoria_Reporte @relation(fields: [Categoria_ID], references: [Categoria_ID]) // Relación con Categoria_Reporte
+  Ubicacion Ubicacion @relation(fields: [Ubicacion_ID], references: [Ubicacion_ID]) // Relación con Ubicacion
+}
+model Categoria_Reporte {
+  Categoria_ID Int      @id @default(autoincrement())
+  Nombre       String
+  Descripcion  String
+  Reportes     Reporte[]
+}
+
+model Ubicacion {
+  Ubicacion_ID Int      @id @default(autoincrement())
+  Calle        String
+  Latitud      Float
+  Longitud     Float
+  Sector_ID Int
+  Sector       Sector @relation(fields: [Sector_ID], references: [Sector_ID]) // Relación con Sector
+  Reportes     Reporte[]
+}
+model Sector {
+  Sector_ID Int      @id @default(autoincrement())
+  Nombre_Sector   String
+  Distrito_ID Int
+  Distrito     Distrito @relation(fields: [Distrito_ID], references: [Distrito_ID]) // Relación con Distrito
+  Ubicaciones Ubicacion[]
+}
+model Distrito {
+  Distrito_ID Int      @id @default(autoincrement())
+  Nombre_Distrito String
+  Municipio_ID Int
+  Municipio     Municipio @relation(fields: [Municipio_ID], references: [Municipio_ID]) // Relación con Municipio
+  Sectores     Sector[]
+}
+model Municipio {
+  Municipio_ID Int      @id @default(autoincrement())
+  Nombre_Municipio String
+  Provincia_ID Int
+  Provincia     Provincia @relation(fields: [Provincia_ID], references: [Provincia_ID]) // Relación con Provincia
+  Distritos    Distrito[]
+}
+model Provincia {
+  Provincia_ID Int      @id @default(autoincrement())
+  Nombre_Provincia String
+  Region_ID Int
+  Region       Region @relation(fields: [Region_ID], references: [Region_ID]) // Relación con Region
+  Municipios  Municipio[]
+}
+
+model Region {
+  Region_ID Int      @id @default(autoincrement())
+  Nombre_Region String
+  Provincias   Provincia[]
 }
