@@ -54,7 +54,8 @@ Backend de la aplicación **DenunciApp**, una plataforma de reporte ciudadano qu
 4. Ejecuta el servidor:
 
    ```bash
-   npm start
+   docker compose up -d
+   npm run dev
    ```
 
 ---
