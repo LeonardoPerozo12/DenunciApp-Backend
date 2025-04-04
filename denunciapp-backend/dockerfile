@@ -3,13 +3,21 @@ FROM node:20
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and install dependencies inside Docker
+# Copiar package.json e instalar dependencias
 COPY package*.json ./
-RUN npm install
+RUN npm install --force
 
-# Copy the rest of the application code
+# Eliminar bcrypt y reinstalarlo de cero
+RUN npm uninstall bcrypt && npm install bcrypt --build-from-source
+
+# Copiar el resto del código de la app
 COPY . .
-# Expose the port the app runs on
+
+# Generar cliente Prisma
+RUN npx prisma generate
+
+# Exponer el puerto de la aplicación
 EXPOSE 3000
-# Command to run the application
+
+# Comando para iniciar la aplicación
 CMD ["npm", "run", "dev"]

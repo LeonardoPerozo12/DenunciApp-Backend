@@ -1,7 +1,5 @@
-import {Router} from 'express';
+import router from '../config/router';
 import { registerUser, loginUser, getUserByID, getAllUsers} from '../controllers/UsuarioController';
-
-const router = Router();
 
 router.post('/register', registerUser); // Register a new user
 router.post('/login', loginUser); // Login a user

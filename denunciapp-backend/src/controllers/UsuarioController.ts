@@ -7,7 +7,10 @@ export const registerUser = async (req: Request, res: Response) => {
     try {
         const {Nombre, Cedula, Correo, Contraseña} = req.body; //parsing from the request body
         const existingUser = await prisma.usuario.findUnique({
-            where: { Correo },
+            where: { 
+                Correo, // Check if the email already exists
+                Cedula, // Check if the ID already exists
+            },
         });
         // Check if the user already exists
         if (existingUser) {
@@ -16,7 +19,8 @@ export const registerUser = async (req: Request, res: Response) => {
         }
 
         const hashedPassword = await bcrypt.hash(Contraseña, 10); // Hashing the password
-        const newUser = await prisma.usuario.create({ //creates new user
+        const newUser = await prisma.usuario.create({ 
+            //creates new user
             data: {
                 Nombre,
                 Cedula,
@@ -28,8 +32,8 @@ export const registerUser = async (req: Request, res: Response) => {
 
     }
     catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Error creating user' });
+        console.error('Error creando usuario: ', error);
+        res.status(500).json({ message: 'Error creando usuario' });
     }
 }
 

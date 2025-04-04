@@ -1,14 +1,13 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import UsarioRoutes from "./routes/UsuarioRoutes";
+import routes from "./routes/IndexRoutes"
 import { connectDB } from './config/prisma';
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT 
 
-        
     connectDB(); // Connect to the database
     console.log('Database connected successfully');
     // CROSS ORIGIN RESOURCE SHARING configuration
@@ -18,9 +17,12 @@ const port = process.env.PORT
     }));
 
     app.use(express.json()); // Middleware to parse JSON requests
-    app.use('/api', UsarioRoutes); // Mount the user routes on /api
 
-
+    //Monta las rutas
+    routes.forEach((route, index) => {
+        app.use(`/api`, route); // Monta cada ruta en el prefijo /api
+    });
+    
     app.get("/", (req, res) => {
         res.send("<h1>API de DenunciApp<h1>");
     });
