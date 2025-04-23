@@ -1,27 +1,34 @@
 import axios from "axios";
+import dotenv from 'dotenv';
+dotenv.config();
 import { promptInstructions } from '../utils/prompt'; // Importa las instrucciones del prompt
 
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-export const callAIAPI = async (message: string, history: { role: "user" | "assistant"; content: string }[]): Promise<string> => {
+
+function extraerJSONDeRespuesta(texto: string): any {
+    const match = texto.match(/```json\s*({[\s\S]*?})\s*```/);
+    if (!match) throw new Error("No se pudo extraer el JSON del mensaje de la IA");
+    return JSON.parse(match[1]);
+}
+
+export const callAIAPI = async (message: string, history: { role: "user" | "assistant"; content: string }[]): Promise<any> => {
     try {
-        if (!OPENAI_API_KEY) {
-            throw new Error("API key not defined in environment variables");
-        }
+        if (!OPENAI_API_KEY) throw new Error("API key not defined");
 
         const messages = [
-            { role: "system", content: promptInstructions }, // Instrucciones base
-            ...history, // Historial corto para contexto
-            { role: "user", content: message } // Mensaje actual del usuario
+            { role: "system", content: promptInstructions },
+            ...history,
+            { role: "user", content: message }
         ];
 
         const response = await axios.post(
             "https://api.openai.com/v1/chat/completions",
             {
                 model: "gpt-4",
-                messages: messages,
+                messages,
                 temperature: 0.7,
-                max_tokens: 500,
+                max_tokens: 1000,
             },
             {
                 headers: {
@@ -31,10 +38,10 @@ export const callAIAPI = async (message: string, history: { role: "user" | "assi
             }
         );
 
-        return response.data.choices[0].message.content;
+        const mensajeIA = response.data.choices[0].message.content;
+        return extraerJSONDeRespuesta(mensajeIA);
     } catch (error) {
         console.error("Error llamando la API de la IA: ", error);
         throw new Error("Error llamando la API de la IA");
     }
 };
-

@@ -12,7 +12,7 @@ connectDB(); // Connect to the database
 console.log('Database connected successfully');
 // CROSS ORIGIN RESOURCE SHARING configuration
 app.use(cors({
-    origin: '*', // Permitir todos los orígenes
+    origin: '*',// Permitir todos los orígenes
     credentials: true,
     }));
     
