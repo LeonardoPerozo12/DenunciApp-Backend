@@ -84,3 +84,41 @@ export const getReportes = async (req: Request, res: Response) => {
             res.status(500).json({ error: "No se pudieron obtener los reportes" });
     }
 };
+
+export const alterReporteStatus = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params; // Obtén el ID del reporte desde los parámetros de la solicitud
+        const { estado } = req.body; // Obtén el nuevo estado del cuerpo de la solicitud
+
+        // Validar que el estado sea uno de los valores permitidos
+        const estadosPermitidos = ["PENDIENTE", "EN_PROCESO", "RESUELTO"];
+        if (!estadosPermitidos.includes(estado)) {
+            res.status(400).json({ error: `Estado no válido. Los estados permitidos son: ${estadosPermitidos.join(", ")}` });
+            return;
+        }
+
+        // Verifica si el reporte existe
+        const reporte = await prisma.reporte.findUnique({
+            where: { Reporte_ID: parseInt(id) },
+        });
+
+        if (!reporte) {
+            res.status(404).json({ error: "Reporte no encontrado" });
+            return;
+        }
+
+        // Actualiza el estado del reporte
+        const reporteActualizado = await prisma.reporte.update({
+            where: { Reporte_ID: parseInt(id) },
+            data: { Estado: estado },
+        });
+
+        res.status(200).json({
+            message: "El estado del reporte ha sido actualizado",
+            reporte: reporteActualizado,
+        });
+    } catch (error) {
+        console.error("Error al actualizar el estado del reporte:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};

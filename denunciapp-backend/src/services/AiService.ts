@@ -1,5 +1,7 @@
 import axios from "axios";
 import { promptInstructions } from '../utils/prompt'; // Importa las instrucciones del prompt
+import dotenv from "dotenv";
+dotenv.config(); // Carga las variables de entorno desde el archivo .env
 
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;

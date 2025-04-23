@@ -12,12 +12,18 @@ connectDB(); // Connect to the database
 console.log('Database connected successfully');
 // CROSS ORIGIN RESOURCE SHARING configuration
 app.use(cors({
-    origin: '*',// Permitir todos los orígenes
+    origin: '*', // Permitir todos los orígenes
     credentials: true,
     }));
 
     app.use(express.json()); // Middleware to parse JSON requests
 
+    // Log incoming requests
+    app.use((req, res, next) => {
+        console.log(`[${req.method}] ${req.url} - ${new Date().toISOString()}`);
+        next();
+    });
+    
     //Monta las rutas
     routes.forEach((route, index) => {
         app.use(`/api`, route); // Monta cada ruta en el prefijo /api
@@ -32,8 +38,3 @@ app.use(cors({
         console.log(`Now listening on port http://localhost:${port}` );
     });
 
-    // Log incoming requests
-    app.use((req, res, next) => {
-        console.log(`[${req.method}] ${req.url} - ${new Date().toISOString()}`);
-        next();
-    });
