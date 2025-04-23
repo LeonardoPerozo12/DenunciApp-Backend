@@ -85,6 +85,32 @@ export const getReportes = async (req: Request, res: Response) => {
     }
 };
 
+export const deleteReporte = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params; // Obtén el ID del reporte desde los parámetros de la solicitud
+
+        // Verifica si el reporte existe
+        const reporte = await prisma.reporte.findUnique({
+            where: { Reporte_ID: parseInt(id) },
+        });
+
+        if (!reporte) {
+            res.status(404).json({ error: "Reporte no encontrado" });
+            return;
+        }
+
+        // Elimina el reporte
+        await prisma.reporte.delete({
+            where: { Reporte_ID: parseInt(id) },
+        });
+
+        res.status(200).json({ message: "Reporte eliminado correctamente" });
+    } catch (error) {
+        console.error("Error al eliminar el reporte:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
 export const alterReporteStatus = async (req: Request, res: Response) => {
     try {
         const { id } = req.params; // Obtén el ID del reporte desde los parámetros de la solicitud
