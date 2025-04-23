@@ -25,7 +25,7 @@ export const callAIAPI = async (message: string, history: { role: "user" | "assi
         const response = await axios.post(
             "https://api.openai.com/v1/chat/completions",
             {
-                model: "gpt-4",
+                model: "gpt-4o-mini",
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
@@ -37,10 +37,14 @@ export const callAIAPI = async (message: string, history: { role: "user" | "assi
                 },
             }
         );
-
+        
         const mensajeIA = response.data.choices[0].message.content;
-        return extraerJSONDeRespuesta(mensajeIA);
-    } catch (error) {
+        return mensajeIA;
+    } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+            console.error("⚠️ Límite de uso excedido (429)");
+            throw new Error("Has excedido el límite de peticiones a la API de OpenAI. Intenta más tarde.");
+        }
         console.error("Error llamando la API de la IA: ", error);
         throw new Error("Error llamando la API de la IA");
     }

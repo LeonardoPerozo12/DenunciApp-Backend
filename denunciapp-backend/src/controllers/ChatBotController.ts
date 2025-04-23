@@ -3,10 +3,13 @@ import { callAIAPI } from '../services/AiService';
 import { generarYEnviarReporte } from '../services/GenerarYEnviarReporte';
 
 // Función para extraer JSON desde un texto posiblemente corrupto
+
+
 function extraerJsonDeTexto(texto: string): string {
-    const match = texto.match(/{[\s\S]*}/); // busca lo que parezca un objeto JSON
-    return match ? match[0] : '{}';
-}
+         const match = texto.match(/{[\s\S]*}/); // This regex works without the 's' flag
+         return match ? match[0] : '{}';
+    }
+    
 
 // Función para detectar si el usuario confirmó el envío
 function usuarioConfirmoEnvio(message: string, history: { role: "user" | "assistant"; content: string }[]): boolean {
@@ -15,13 +18,12 @@ function usuarioConfirmoEnvio(message: string, history: { role: "user" | "assist
 
     const confirmo = confirmaciones.some(palabra => mensajeNormalizado.includes(palabra)) &&
         history.some(h =>
-            /deseas?.*enviar/i.test(h.content) ||
-            /¿.*enviamos.*reporte/i.test(h.content) ||
-            /desea.*enviarlo/i.test(h.content)
+            /¿confirma que desea enviar este reporte\?/i.test(h.content)
         );
 
     return confirmo;
 }
+
 
 export const chatBot = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -38,6 +40,18 @@ export const chatBot = async (req: Request, res: Response): Promise<void> => {
             history = history.slice(-maxHistorySize);
         }
 
+        console.log("📥 Mensaje recibido:", message);
+        console.log("🧠 Historial recibido:");
+        history.forEach(h => {
+        console.log(`${h.role.toUpperCase()}: ${h.content}`);
+        });
+
+        console.log("🤖 ¿Historial contiene confirmación previa del bot?");
+        history.forEach(h => {
+        if (h.role === "assistant") {
+            console.log("🧠 Assistant dijo:", h.content);
+        }
+        });
         // Verifica si el usuario confirmó el envío
         if (usuarioConfirmoEnvio(message, history)) {
             console.log("⚠️ Usuario confirmó el envío. Procediendo a generar reporte...");
@@ -71,6 +85,8 @@ export const chatBot = async (req: Request, res: Response): Promise<void> => {
 
         // Caso normal: continuar la conversación
         const aiResponse = await callAIAPI(message, history);
+
+        console.log("🤖 Respuesta normal de la IA:", aiResponse);
 
         history.push({ role: "user", content: message });
         history.push({ role: "assistant", content: aiResponse });

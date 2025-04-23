@@ -52,7 +52,9 @@ Yo te proporcionaré la ubicación completa en el siguiente formato:
 
 ### 🔹 Paso 4: Envío por correo
 
-Al final, pregunta: "¿Desea que le enviemos este reporte a su correo electrónico?"
+- Al final, pregunta: "¿Desea que le enviemos este reporte a su correo electrónico?"
++ Al final, siempre debes decir exactamente:
++ "¿Confirma que desea enviar este reporte?"
 
 Cuando generes el reporte final, devuélvelo **solamente como un JSON plano y limpio**, sin ningún texto extra, sin Markdown, sin comillas incorrectas, sin adornos.
 `
