@@ -21,10 +21,6 @@ export const postReporte = async (req: Request, res: Response):Promise<void> => 
 
         // Llama al servicio de geocodificación para obtener detalles de la ubicación
         const geocodedLocation = await reverseGeocoding(latitud, longitud);
-        if (!geocodedLocation) {
-            res.status(400).json({ error: 'No se pudo obtener detalles de la ubicación' });
-            return;
-        }   
         console.log('Ubicación geocodificada:', geocodedLocation);
         
         // Combina los datos de ubicación proporcionados con los obtenidos del servicio
